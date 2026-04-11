@@ -1,0 +1,99 @@
+/* Theme html5-qrcode to match Courier app (scoped under .agent-qr-scanner) */
+
+.agent-qr-scanner #agent-qr-reader {
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: calc(var(--radius) + 6px) !important;
+  background: hsl(var(--card)) !important;
+  box-shadow: 0 1px 3px 0 rgb(15 23 42 / 0.06) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+.dark .agent-qr-scanner #agent-qr-reader {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.35) !important;
+}
+
+.agent-qr-scanner #agent-qr-reader__scan_region {
+  background: hsl(var(--muted) / 0.55) !important;
+  border-bottom: 1px solid hsl(var(--border)) !important;
+}
+
+.agent-qr-scanner #html5-qrcode-anchor-scan-type-change {
+  color: hsl(var(--primary)) !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  margin-top: 0.5rem !important;
+}
+
+.agent-qr-scanner #html5-qrcode-anchor-scan-type-change:hover {
+  text-decoration: underline !important;
+}
+
+.agent-qr-scanner #html5-qrcode-button-camera-permission,
+.agent-qr-scanner #html5-qrcode-button-camera-start,
+.agent-qr-scanner #html5-qrcode-button-file-selection {
+  background: hsl(var(--primary)) !important;
+  color: hsl(var(--primary-foreground)) !important;
+  border: none !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem 1.1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: opacity 0.15s ease !important;
+}
+
+.agent-qr-scanner #html5-qrcode-button-camera-permission:hover,
+.agent-qr-scanner #html5-qrcode-button-camera-start:hover,
+.agent-qr-scanner #html5-qrcode-button-file-selection:hover {
+  opacity: 0.92 !important;
+}
+
+.agent-qr-scanner #html5-qrcode-button-camera-stop {
+  background: hsl(var(--secondary)) !important;
+  color: hsl(var(--secondary-foreground)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.agent-qr-scanner #html5-qrcode-select-camera {
+  border-radius: var(--radius) !important;
+  border: 1px solid hsl(var(--input)) !important;
+  padding: 0.35rem 0.5rem !important;
+  margin: 0.25rem 0 !important;
+  background: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+.agent-qr-scanner #agent-qr-reader__header_message {
+  border-radius: var(--radius) !important;
+  font-size: 0.8125rem !important;
+}
+
+/* User-friendly scan errors (see humanizeScannerHeader in page.tsx) */
+.agent-qr-scanner [id$="__header_message"][data-scan-msg="soft-warning"] {
+  background: hsl(var(--destructive) / 0.09) !important;
+  color: hsl(var(--destructive)) !important;
+  border: 1px solid hsl(var(--destructive) / 0.28) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.65rem 0.85rem !important;
+  margin: 0.35rem auto 0.5rem !important;
+  font-size: 0.8125rem !important;
+  line-height: 1.45 !important;
+  text-align: center !important;
+  max-width: 42rem;
+}
+
+.agent-qr-scanner #agent-qr-reader__dashboard_section {
+  padding: 0.75rem 1rem 1rem !important;
+  color: hsl(var(--foreground)) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.5 !important;
+}
+
+.agent-qr-scanner #agent-qr-reader__dashboard {
+  background: hsl(var(--card)) !important;
+}
