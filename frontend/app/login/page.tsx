@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Package2, Eye, EyeOff, Loader2 } from "lucide-react";
@@ -58,6 +58,30 @@ function LoginPageInner() {
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  /** Whether first-time platform setup is still available (hide link when already done). */
+  const [setupOffer, setSetupOffer] = useState<"loading" | "open" | "closed">(
+    "loading"
+  );
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const { data } = await api.get<{ needsSetup: boolean }>(
+          "/api/setup/status"
+        );
+        if (!cancelled) {
+          setSetupOffer(data.needsSetup ? "open" : "closed");
+        }
+      } catch {
+        // If the API is unreachable, keep the link so new installs can still try /setup.
+        if (!cancelled) setSetupOffer("open");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   function validate(): boolean {
     const errs: FieldErrors = {};
@@ -288,13 +312,32 @@ function LoginPageInner() {
             >
               Register
             </Link>
-            {" · "}
-            <Link
-              href="/setup"
-              className="font-medium text-foreground underline-offset-4 hover:underline"
-            >
-              Platform setup
-            </Link>
+            {setupOffer === "loading" ? (
+              <>
+                {" · "}
+                <span className="text-muted-foreground/80">Checking…</span>
+              </>
+            ) : setupOffer === "open" ? (
+              <>
+                {" · "}
+                <Link
+                  href="/setup"
+                  className="font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Platform setup
+                </Link>
+              </>
+            ) : (
+              <>
+                {" · "}
+                <span
+                  className="text-muted-foreground/90"
+                  title="The platform super admin already exists. Use Sign in above."
+                >
+                  Platform already configured
+                </span>
+              </>
+            )}
           </p>
         </div>
       </div>
