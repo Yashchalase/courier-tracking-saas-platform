@@ -1,8 +1,3 @@
-/**
- * Backup of auth middleware. Restore: copy this file to `middleware.ts` and redeploy.
- * Vercel Edge previously threw __dirname errors with next-pwa; test after upgrading Next
- * or moving guards to server layouts if issues return.
- */
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
