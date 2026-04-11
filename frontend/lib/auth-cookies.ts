@@ -17,7 +17,8 @@ export function setAuthCookies(token: string, role: string) {
 
 export function clearAuthCookies() {
   if (typeof document === "undefined") return;
-  const opts = "path=/; max-age=0";
+  // Match setAuthCookies so browsers reliably expire the cookie
+  const opts = "path=/; max-age=0; SameSite=Lax";
   document.cookie = `${AUTH_TOKEN_COOKIE}=; ${opts}`;
   document.cookie = `${USER_ROLE_COOKIE}=; ${opts}`;
 }

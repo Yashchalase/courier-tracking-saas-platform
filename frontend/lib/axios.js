@@ -1,6 +1,7 @@
 import axios from "axios";
 
 import { getAuthTokenFromStorage } from "@/lib/get-auth-token";
+import { logoutAndGoToLogin } from "@/lib/logout-client";
 import { useAuthStore } from "@/store/auth";
 
 const baseURL =
@@ -28,8 +29,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== "undefined") {
-      useAuthStore.getState().logout();
-      window.location.href = "/login";
+      logoutAndGoToLogin();
     }
     return Promise.reject(error);
   }

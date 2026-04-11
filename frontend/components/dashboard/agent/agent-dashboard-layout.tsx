@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LayoutDashboard, LogOut, Menu, ScanLine, Truck } from "lucide-react";
 import * as React from "react";
 
@@ -14,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { logoutAndGoToLogin } from "@/lib/logout-client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 
@@ -72,15 +73,11 @@ export function AgentDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function handleLogout() {
-    logout();
-    router.push("/login");
-    router.refresh();
+    logoutAndGoToLogin();
   }
 
   const displayName =

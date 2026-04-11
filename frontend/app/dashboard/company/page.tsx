@@ -127,49 +127,51 @@ export default function CompanyMainDashboardPage() {
         </Card>
       </div>
 
-      <Card>
+      <Card className="min-w-0">
         <CardHeader>
           <CardTitle>Volume by category</CardTitle>
           <CardDescription>
             Total, delivered, pending, and failed shipments
           </CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] w-full pt-2">
+        <CardContent className="pt-2">
           {loading ? (
-            <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+            <div className="flex h-[280px] items-center justify-center text-sm text-muted-foreground">
               Loading chart…
             </div>
           ) : chartData.length ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData} margin={{ left: 0, right: 8 }}>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis
-                  dataKey="name"
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <YAxis
-                  allowDecimals={false}
-                  tickLine={false}
-                  axisLine={false}
-                  className="text-xs"
-                />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "8px",
-                    border: "1px solid hsl(var(--border))",
-                    background: "hsl(var(--background))",
-                  }}
-                />
-                <Bar
-                  dataKey="value"
-                  fill="hsl(var(--primary))"
-                  radius={[6, 6, 0, 0]}
-                  maxBarSize={56}
-                />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-[280px] w-full min-w-0">
+              <ResponsiveContainer width="100%" height="100%" minWidth={0} minHeight={280}>
+                <BarChart data={chartData} margin={{ left: 0, right: 8 }}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis
+                    dataKey="name"
+                    tickLine={false}
+                    axisLine={false}
+                    className="text-xs"
+                  />
+                  <YAxis
+                    allowDecimals={false}
+                    tickLine={false}
+                    axisLine={false}
+                    className="text-xs"
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: "8px",
+                      border: "1px solid hsl(var(--border))",
+                      background: "hsl(var(--background))",
+                    }}
+                  />
+                  <Bar
+                    dataKey="value"
+                    fill="hsl(var(--primary))"
+                    radius={[6, 6, 0, 0]}
+                    maxBarSize={56}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           ) : (
             <p className="text-sm text-muted-foreground">No data to display.</p>
           )}

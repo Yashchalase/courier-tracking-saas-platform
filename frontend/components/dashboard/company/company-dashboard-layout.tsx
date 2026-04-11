@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   LogOut,
@@ -22,6 +22,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { logoutAndGoToLogin } from "@/lib/logout-client";
 import { cn } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 
@@ -99,15 +100,11 @@ export function CompanyDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
   const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
   function handleLogout() {
-    logout();
-    router.push("/login");
-    router.refresh();
+    logoutAndGoToLogin();
   }
 
   const displayName =
