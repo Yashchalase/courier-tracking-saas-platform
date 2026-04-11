@@ -1,12 +1,27 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
-import { AUTH_TOKEN_COOKIE, USER_ROLE_COOKIE } from "@/lib/constants";
-import {
-  ROLE_DASHBOARD_HOME,
-  getRoleRequiredForDashboardPath,
-  type KnownDashboardRole,
-} from "@/lib/role-routing";
+const AUTH_TOKEN_COOKIE = "auth-token";
+const USER_ROLE_COOKIE = "user-role";
+
+const ROLE_DASHBOARD_HOME = {
+  SUPER_ADMIN: "/dashboard/admin",
+  COMPANY_ADMIN: "/dashboard/company",
+  DELIVERY_AGENT: "/dashboard/agent",
+  CUSTOMER: "/dashboard/customer",
+} as const;
+
+type KnownDashboardRole = keyof typeof ROLE_DASHBOARD_HOME;
+
+function getRoleRequiredForDashboardPath(
+  pathname: string
+): KnownDashboardRole | null {
+  if (pathname.startsWith("/dashboard/admin")) return "SUPER_ADMIN";
+  if (pathname.startsWith("/dashboard/company")) return "COMPANY_ADMIN";
+  if (pathname.startsWith("/dashboard/agent")) return "DELIVERY_AGENT";
+  if (pathname.startsWith("/dashboard/customer")) return "CUSTOMER";
+  return null;
+}
 
 const isPublicPath = (pathname: string) =>
   pathname === "/" ||
