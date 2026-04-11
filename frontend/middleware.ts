@@ -1,77 +1,72 @@
-import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
-
-const AUTH_TOKEN_COOKIE = "auth-token";
-const USER_ROLE_COOKIE = "user-role";
-
-const ROLE_DASHBOARD_HOME = {
-  SUPER_ADMIN: "/dashboard/admin",
-  COMPANY_ADMIN: "/dashboard/company",
-  DELIVERY_AGENT: "/dashboard/agent",
-  CUSTOMER: "/dashboard/customer",
-} as const;
-
-type KnownDashboardRole = keyof typeof ROLE_DASHBOARD_HOME;
-
-function getRoleRequiredForDashboardPath(
-  pathname: string
-): KnownDashboardRole | null {
-  if (pathname.startsWith("/dashboard/admin")) return "SUPER_ADMIN";
-  if (pathname.startsWith("/dashboard/company")) return "COMPANY_ADMIN";
-  if (pathname.startsWith("/dashboard/agent")) return "DELIVERY_AGENT";
-  if (pathname.startsWith("/dashboard/customer")) return "CUSTOMER";
-  return null;
-}
-
-const isPublicPath = (pathname: string) =>
-  pathname === "/" ||
-  pathname === "/login" ||
-  pathname === "/register" ||
-  pathname === "/setup" ||
-  pathname === "/offline" ||
-  pathname === "/track" ||
-  pathname.startsWith("/track/");
+import { NextResponse, type NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const pathname = request.nextUrl.pathname;
 
-  const token = request.cookies.get(AUTH_TOKEN_COOKIE)?.value;
-  const role = request.cookies.get(USER_ROLE_COOKIE)?.value;
+  const token =
+    request.cookies.get("auth-token")?.value ?? "";
+  const role =
+    request.cookies.get("user-role")?.value ?? "";
 
-  if (isPublicPath(pathname)) {
-    if (
-      token &&
-      role &&
-      role in ROLE_DASHBOARD_HOME &&
-      (pathname === "/login" || pathname === "/register" || pathname === "/setup")
-    ) {
-      return NextResponse.redirect(
-        new URL(
-          ROLE_DASHBOARD_HOME[role as KnownDashboardRole],
-          request.url
-        )
-      );
+  let home: string | null = null;
+  switch (role) {
+    case "SUPER_ADMIN":
+      home = "/dashboard/admin";
+      break;
+    case "COMPANY_ADMIN":
+      home = "/dashboard/company";
+      break;
+    case "DELIVERY_AGENT":
+      home = "/dashboard/agent";
+      break;
+    case "CUSTOMER":
+      home = "/dashboard/customer";
+      break;
+    default:
+      home = null;
+  }
+
+  const isPublic =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/setup" ||
+    pathname === "/offline" ||
+    pathname === "/track" ||
+    pathname.startsWith("/track/");
+
+  if (isPublic) {
+    const authLanding =
+      pathname === "/login" ||
+      pathname === "/register" ||
+      pathname === "/setup";
+    if (token && home && authLanding) {
+      return NextResponse.redirect(new URL(home, request.url));
     }
     return NextResponse.next();
   }
 
   if (pathname.startsWith("/dashboard")) {
-    if (!token || !role || !(role in ROLE_DASHBOARD_HOME)) {
+    if (!token || !home) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-
-    const home = ROLE_DASHBOARD_HOME[role as KnownDashboardRole];
 
     if (pathname === "/dashboard" || pathname === "/dashboard/") {
       return NextResponse.redirect(new URL(home, request.url));
     }
 
-    const required = getRoleRequiredForDashboardPath(pathname);
-    if (!required) {
-      return NextResponse.redirect(new URL(home, request.url));
+    let required: string | null = null;
+    if (pathname.startsWith("/dashboard/admin")) {
+      required = "SUPER_ADMIN";
+    } else if (pathname.startsWith("/dashboard/company")) {
+      required = "COMPANY_ADMIN";
+    } else if (pathname.startsWith("/dashboard/agent")) {
+      required = "DELIVERY_AGENT";
+    } else if (pathname.startsWith("/dashboard/customer")) {
+      required = "CUSTOMER";
     }
 
-    if (role !== required) {
+    if (!required || role !== required) {
       return NextResponse.redirect(new URL(home, request.url));
     }
   }
@@ -81,6 +76,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sw\\.js|workbox.*|manifest\\.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|sw\\.js|.*\\.(?:svg|ico|png|jpg|jpeg|gif|webp|webmanifest)$).*)",
   ],
 };
