@@ -1,0 +1,176 @@
+// Multi-tenant courier tracking SaaS — PostgreSQL schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  COMPANY_ADMIN
+  DELIVERY_AGENT
+  CUSTOMER
+}
+
+enum ShipmentStatus {
+  CREATED
+  PICKED_UP
+  AT_SORTING_FACILITY
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+  RETURNED
+}
+
+model SubscriptionPlan {
+  id            String   @id @default(cuid())
+  name          String
+  maxShipments  Int
+  price         Decimal  @db.Decimal(12, 2)
+  createdAt     DateTime @default(now())
+
+  tenants Tenant[]
+
+  @@map("subscription_plans")
+}
+
+model Tenant {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  subscriptionPlanId String
+  createdAt          DateTime @default(now())
+
+  subscriptionPlan SubscriptionPlan @relation(fields: [subscriptionPlanId], references: [id])
+  users            User[]
+  hubs             Hub[]
+  agents           Agent[]
+  shipments        Shipment[]
+  auditLogs        AuditLog[]
+
+  @@index([subscriptionPlanId])
+  @@map("tenants")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  tenantId     String
+  email        String
+  name         String?
+  passwordHash String
+  role         UserRole
+  createdAt    DateTime @default(now())
+
+  tenant         Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  agent          Agent?
+  sentShipments  Shipment[] @relation("ShipmentSender")
+  auditLogs      AuditLog[]
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+  @@map("users")
+}
+
+model Hub {
+  id        String   @id @default(cuid())
+  tenantId  String
+  name      String
+  address   String
+  city      String
+  lat       Float
+  lng       Float
+  createdAt DateTime @default(now())
+
+  tenant              Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  agents              Agent[]
+  originShipments     Shipment[] @relation("OriginHub")
+  destinationShipments Shipment[] @relation("DestinationHub")
+
+  @@index([tenantId])
+  @@map("hubs")
+}
+
+model Agent {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  tenantId    String
+  hubId       String
+  isAvailable Boolean  @default(true)
+  currentLat  Float?
+  currentLng  Float?
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  hub       Hub        @relation(fields: [hubId], references: [id], onDelete: Restrict)
+  shipments Shipment[]
+
+  @@index([tenantId])
+  @@index([hubId])
+  @@map("agents")
+}
+
+model Shipment {
+  id                 String          @id @default(cuid())
+  tenantId           String
+  trackingId         String          @unique
+  senderId           String
+  recipientName      String
+  recipientEmail     String?
+  recipientPhone     String
+  recipientAddress   String
+  originHubId        String
+  destinationHubId   String
+  assignedAgentId    String?
+  status             ShipmentStatus
+  estimatedDelivery  DateTime?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  tenant          Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  sender          User             @relation("ShipmentSender", fields: [senderId], references: [id], onDelete: Restrict)
+  originHub       Hub              @relation("OriginHub", fields: [originHubId], references: [id], onDelete: Restrict)
+  destinationHub  Hub              @relation("DestinationHub", fields: [destinationHubId], references: [id], onDelete: Restrict)
+  assignedAgent   Agent?           @relation(fields: [assignedAgentId], references: [id], onDelete: SetNull)
+  events          ShipmentEvent[]
+
+  @@index([tenantId])
+  @@index([status])
+  @@map("shipments")
+}
+
+model ShipmentEvent {
+  id            String          @id @default(cuid())
+  shipmentId    String
+  status        ShipmentStatus
+  note          String?
+  proofImageUrl String?
+  lat           Float?
+  lng           Float?
+  createdAt     DateTime        @default(now())
+
+  shipment Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+
+  @@index([shipmentId])
+  @@map("shipment_events")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String
+  tenantId  String
+  action    String
+  entity    String
+  entityId  String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@map("audit_logs")
+}
