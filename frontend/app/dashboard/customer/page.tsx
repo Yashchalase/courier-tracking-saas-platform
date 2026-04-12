@@ -100,11 +100,17 @@ export default function CustomerDashboardPage() {
                   role="button"
                   tabIndex={0}
                   className="cursor-pointer"
-                  onClick={() => router.push(`/track/${encodeURIComponent(s.trackingId)}`)}
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/customer/track/${encodeURIComponent(s.trackingId)}`
+                    )
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      router.push(`/track/${encodeURIComponent(s.trackingId)}`);
+                      router.push(
+                        `/dashboard/customer/track/${encodeURIComponent(s.trackingId)}`
+                      );
                     }
                   }}
                 >

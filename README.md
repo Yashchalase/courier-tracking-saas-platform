@@ -98,7 +98,7 @@ Open [http://localhost:3000](http://localhost:3000).
 
 ### First-time platform setup
 
-If the database is empty, use the app’s **setup** flow (or seed scripts if documented in your deployment) to create the initial platform tenant and super admin before using the test credentials below.
+If the database is empty, use the app’s **setup** flow (or seed scripts if documented in your deployment) to create the initial platform tenant and super admin before using the demo credentials below.
 
 ---
 
@@ -125,17 +125,14 @@ If the database is empty, use the app’s **setup** flow (or seed scripts if doc
 
 ---
 
-## Test credentials
+## Demo Credentials
 
-Use these **only in non-production or dedicated demo environments**. Rotate passwords if they were ever exposed publicly.
-
-| Role | Organization / tenant | Email | Password |
-|------|------------------------|-------|----------|
-| **Platform Super Admin** | `platform` | `superadmin@platform.com` | `Admin@1234` |
-| **Company Admin** | `my-courier` | `admin@mycourier.com` | `Admin@1234` |
-| **Delivery Agent** | `my-courier` | `agent@mycourier.com` | `Admin@1234` |
-
-Login requires the correct **organization code** (slug) where applicable, plus email and password.
+| Role | Organization Code | Email | Password |
+|------|------------------|-------|----------|
+| Super Admin | platform | superadmin@platform.com | Admin@1234 |
+| Company Admin | my-courier | demoadmin@mycourier.com | Demo@1234 |
+| Delivery Agent | my-courier | demoagent@mycourier.com | Demo@1234 |
+| Customer | my-courier | democustomer@mycourier.com | Demo@1234 |
 
 ---
 

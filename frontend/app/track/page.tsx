@@ -1,33 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { cn } from "@/lib/utils";
+import { TrackShipmentForm } from "@/components/track/track-shipment-form";
 
 const headerAccountLinkClass =
   "rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2";
 
 export default function TrackPage() {
-  const router = useRouter();
-  const [id, setId] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const trimmed = id.trim();
-    if (!trimmed) {
-      setError("Enter a tracking number to continue.");
-      return;
-    }
-    setError(null);
-    router.push(`/track/${encodeURIComponent(trimmed)}`);
-  }
-
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <a
@@ -67,54 +47,19 @@ export default function TrackPage() {
         />
 
         <div className="relative mx-auto w-full max-w-lg px-4 py-16 sm:px-6 sm:py-20">
-          <div className="text-center space-y-2 mb-8">
+          <div className="mb-8 space-y-2 text-center">
             <h1 className="text-balance text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
               Track a shipment
             </h1>
-            <p className="text-pretty text-muted-foreground text-base leading-relaxed sm:text-lg">
+            <p className="text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
               Enter your tracking number to see live status and delivery updates.
             </p>
           </div>
 
-          <form
-            id="track-form"
-            onSubmit={handleSubmit}
-            className="rounded-2xl border border-border/80 bg-card/80 p-6 shadow-sm backdrop-blur-sm dark:bg-card/60 space-y-5"
-            noValidate
-          >
-            <div className="space-y-2">
-              <Label htmlFor="tracking-id">Tracking number</Label>
-              <Input
-                id="tracking-id"
-                name="trackingId"
-                type="text"
-                autoComplete="off"
-                autoCapitalize="none"
-                autoCorrect="off"
-                spellCheck={false}
-                placeholder="e.g. TRK-ABC123"
-                value={id}
-                onChange={(e) => {
-                  setId(e.target.value);
-                  if (error) setError(null);
-                }}
-                className={cn(
-                  "font-mono text-base h-11",
-                  error && "border-destructive focus-visible:ring-destructive"
-                )}
-                aria-invalid={error ? true : undefined}
-                aria-describedby={error ? "tracking-error" : undefined}
-              />
-              {error ? (
-                <p id="tracking-error" className="text-sm text-destructive" role="alert">
-                  {error}
-                </p>
-              ) : null}
-            </div>
-            <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold">
-              View tracking
-            </Button>
-          </form>
+          <TrackShipmentForm
+            buildTrackingUrl={(id) => `/track/${encodeURIComponent(id)}`}
+            className="mx-auto"
+          />
 
           <p className="mt-8 text-center text-sm text-muted-foreground">
             <Link

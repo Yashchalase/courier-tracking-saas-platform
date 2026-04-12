@@ -27,11 +27,12 @@ const CUSTOMER_NAV = [
       path === "/dashboard/customer" || path === "/dashboard/customer/",
   },
   {
-    href: "/track",
+    href: "/dashboard/customer/track",
     label: "Track a shipment",
     icon: Search,
     match: (path: string) =>
-      path === "/track" || path.startsWith("/track/"),
+      path === "/dashboard/customer/track" ||
+      path.startsWith("/dashboard/customer/track/"),
   },
 ] as const;
 
