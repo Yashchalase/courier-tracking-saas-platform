@@ -21,6 +21,10 @@ const companyRoutes = require("./routes/company");
 
 const app = express();
 
+// Railway and similar platforms run behind a reverse proxy and set X-Forwarded-For.
+// Trust the first proxy so express-rate-limit can reliably identify clients.
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(
   cors({

@@ -1,6 +1,12 @@
 const nodemailer = require("nodemailer");
+const dns = require("node:dns");
 
 let transporter;
+
+function lookupIpv4(hostname, options, callback) {
+  // Force IPv4 resolution to avoid IPv6 ENETUNREACH in some container networks.
+  return dns.lookup(hostname, { family: 4 }, callback);
+}
 
 /**
  * Builds a Nodemailer transport from environment.
@@ -31,6 +37,7 @@ function getTransporter() {
       port,
       secure,
       auth: { user, pass },
+      lookup: lookupIpv4,
     });
     return transporter;
   }
@@ -44,6 +51,7 @@ function getTransporter() {
         user: "resend",
         pass: process.env.RESEND_API_KEY,
       },
+      lookup: lookupIpv4,
     });
     return transporter;
   }
